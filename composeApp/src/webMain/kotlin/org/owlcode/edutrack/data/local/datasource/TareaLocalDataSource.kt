@@ -10,7 +10,7 @@ class TareaLocalDataSource(private val driver: StorageDriver) {
     private companion object { const val STORE = "tareas" }
 
     suspend fun save(tarea: TareaDto) =
-        driver.put(STORE, tarea.id, Json.encodeToString(tarea))
+        driver.put(STORE, tarea.id.toString(), Json.encodeToString(tarea))
 
     suspend fun get(id: String): TareaDto? =
         driver.get(STORE, id)?.let { runCatching { Json.decodeFromString<TareaDto>(it) }.getOrNull() }

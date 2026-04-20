@@ -19,11 +19,20 @@ class CourseRepositoryImpl(
 
     // offline-first: devuelve datos locales inmediatamente
     override suspend fun getCourses(): AppResult<List<Course>> = safeApiCall {
-        local.getAllCourses().map { it.toLocalDomain() }
+        val token = authLocal.getToken() ?: error("No autenticado")
+        val dtos = remote.getCourses(token)
+        local.saveAllCourses(dtos)
+        dtos.map { it.toDomain() }
     }
 
     override suspend fun getCourseById(id: String): AppResult<Course?> = safeApiCall {
         local.getCourse(id)?.toLocalDomain()
+            ?: run {
+                val token = authLocal.getToken() ?: error("No autenticado")
+                val dto = remote.getCourseById(token, id.toLong())
+                local.saveCourse(dto)
+                dto.toDomain()
+            }
     }
 
     override suspend fun addCourse(course: Course): AppResult<Course> = safeApiCall {
@@ -42,8 +51,7 @@ class CourseRepositoryImpl(
 
     override suspend fun deleteCourse(id: String): AppResult<Unit> = safeApiCall {
         val token = authLocal.getToken() ?: error("No autenticado")
-        remote.deleteCourse(token, id)
+        remote.deleteCourse(token, id.toLong())
         local.deleteCourse(id)
     }
 }
-

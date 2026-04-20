@@ -5,7 +5,7 @@ import org.owlcode.edutrack.domain.model.EventoPersonal
 
 @Serializable
 data class EventoPersonalDto(
-    val id: String,
+    val id: Long = 0L,
     val titulo: String,
     val descripcion: String = "",
     val fecha: String,
@@ -13,7 +13,7 @@ data class EventoPersonalDto(
     val horaFin: String? = null
 ) {
     fun toDomain(): EventoPersonal = EventoPersonal(
-        id          = id,
+        id          = id.toString(),
         titulo      = titulo,
         descripcion = descripcion,
         fecha       = fecha,
@@ -23,11 +23,10 @@ data class EventoPersonalDto(
 }
 
 fun EventoPersonal.toDto(): EventoPersonalDto = EventoPersonalDto(
-    id          = id,
+    id          = id.toLongOrNull() ?: 0L,
     titulo      = titulo,
     descripcion = descripcion,
     fecha       = fecha,
     horaInicio  = horaInicio,
     horaFin     = horaFin
 )
-

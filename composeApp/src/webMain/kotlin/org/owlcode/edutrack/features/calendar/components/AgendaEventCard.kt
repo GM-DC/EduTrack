@@ -62,13 +62,25 @@ fun AgendaEventCard(
                     .background(typeColor)
             )
 
-            // ── Título + estado ────────────────────────────────────────────
+            // ── Título + curso + estado ────────────────────────────────────────
             Column(modifier = Modifier.weight(1f)) {
+                // Nombre del curso (solo para Tarea y Examen)
+                if (item.type != EventType.PERSONAL) {
+                    item.courseName?.let {
+                        Text(
+                            text  = it,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = typeColor
+                        )
+                    }
+                }
                 Text(text = item.title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
                 item.status?.let {
-                    Text(text = it.lowercase().replaceFirstChar { c -> c.uppercaseChar() },
+                    Text(
+                        text  = it.toStatusLabel(),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
 
@@ -99,3 +111,17 @@ private fun EventType.label(): String = when (this) {
     EventType.TASK     -> "Tarea"
     EventType.PERSONAL -> "Personal"
 }
+
+private fun String.toStatusLabel(): String = when (this.uppercase()) {
+    // TaskStatus
+    "PENDING"     -> "Pendiente"
+    "IN_PROGRESS" -> "En progreso"
+    "SUBMITTED"   -> "Entregada"
+    "OVERDUE"     -> "Vencida"
+    // ExamStatus
+    "TAKEN"       -> "Rendido"
+    "RESCHEDULED" -> "Reprogramado"
+    "CANCELLED"   -> "Cancelado"
+    else          -> this
+}
+

@@ -7,8 +7,8 @@ import org.owlcode.edutrack.domain.model.TaskStatus
 
 @Serializable
 data class TareaDto(
-    val id: String,
-    val courseId: String,
+    val id: Long = 0L,
+    val courseId: Long,
     val titulo: String,
     val descripcion: String = "",
     val prioridad: String = TaskPriority.MEDIUM.name,
@@ -19,22 +19,22 @@ data class TareaDto(
     val estado: String = TaskStatus.PENDING.name
 ) {
     fun toDomain(): Tarea = Tarea(
-        id          = id,
-        courseId    = courseId,
+        id          = id.toString(),
+        courseId    = courseId.toString(),
         titulo      = titulo,
         descripcion = descripcion,
-        prioridad   = TaskPriority.valueOf(prioridad),
+        prioridad   = runCatching { TaskPriority.valueOf(prioridad) }.getOrDefault(TaskPriority.MEDIUM),
         startDate   = startDate,
         dueDate     = dueDate,
         dueTime     = dueTime,
         endDate     = endDate,
-        estado      = TaskStatus.valueOf(estado)
+        estado      = runCatching { TaskStatus.valueOf(estado) }.getOrDefault(TaskStatus.PENDING)
     )
 }
 
 fun Tarea.toDto(): TareaDto = TareaDto(
-    id          = id,
-    courseId    = courseId,
+    id          = id.toLongOrNull() ?: 0L,
+    courseId    = courseId.toLongOrNull() ?: 0L,
     titulo      = titulo,
     descripcion = descripcion,
     prioridad   = prioridad.name,

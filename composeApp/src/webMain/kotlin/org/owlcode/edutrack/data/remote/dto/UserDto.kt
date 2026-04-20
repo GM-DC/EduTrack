@@ -4,9 +4,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserDto(
-    val id: String,
-    val name: String,
+    val id: Long,
     val email: String,
-    val role: String
+    val firstName: String,
+    val lastName: String,
+    val fullName: String = "$firstName $lastName",
+    val isActive: Boolean = true
 )
-

@@ -72,6 +72,15 @@ fun EventBlock(
             )
             Spacer(Modifier.width(4.dp))
             Column {
+                if (item.type != EventType.PERSONAL && item.courseName != null) {
+                    Text(
+                        text     = item.courseName,
+                        style    = MaterialTheme.typography.labelSmall,
+                        color    = color.copy(alpha = 0.8f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
                 Text(
                     text       = item.title,
                     style      = MaterialTheme.typography.labelSmall,

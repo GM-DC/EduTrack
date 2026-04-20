@@ -10,7 +10,7 @@ class ExamenLocalDataSource(private val driver: StorageDriver) {
     private companion object { const val STORE = "examenes" }
 
     suspend fun save(examen: ExamenDto) =
-        driver.put(STORE, examen.id, Json.encodeToString(examen))
+        driver.put(STORE, examen.id.toString(), Json.encodeToString(examen))
 
     suspend fun get(id: String): ExamenDto? =
         driver.get(STORE, id)?.let { runCatching { Json.decodeFromString<ExamenDto>(it) }.getOrNull() }

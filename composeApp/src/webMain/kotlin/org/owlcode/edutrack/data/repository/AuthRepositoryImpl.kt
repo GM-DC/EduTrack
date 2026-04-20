@@ -16,10 +16,10 @@ class AuthRepositoryImpl(
 
     override suspend fun login(email: String, password: String): AppResult<User> =
         safeApiCall {
-            val response = remote.login(email, password)
-            local.saveToken(response.token)
-            local.saveUser(response.user)
-            response.user.toDomain()
+            val authData = remote.login(email, password)
+            local.saveToken(authData.token)
+            local.saveUser(authData.user)
+            authData.user.toDomain()
         }
 
     override suspend fun logout(): AppResult<Unit> = safeApiCall {
@@ -35,4 +35,3 @@ class AuthRepositoryImpl(
     override suspend fun isAuthenticated(): Boolean =
         local.getToken() != null
 }
-

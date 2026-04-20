@@ -16,6 +16,7 @@ data class CalendarItem(
     val isAllDay: Boolean = false,         // true → va en zona superior (sin timeline)
     val courseColor: String? = null,       // hex color del curso (null para Personal)
     val courseId: String? = null,
+    val courseName: String? = null,        // nombre del curso (null para Personal)
     val status: String? = null,            // estado legible (ej. "PENDING")
     val isDeadline: Boolean = false        // true para tareas (nunca bloque principal)
 )

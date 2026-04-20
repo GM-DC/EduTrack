@@ -6,10 +6,10 @@ import org.owlcode.edutrack.data.remote.dto.UserDto
 import org.owlcode.edutrack.domain.model.*
 
 fun UserDto.toDomain(): User = User(
-    id    = id,
-    name  = name,
+    id    = id.toString(),
+    name  = fullName,
     email = email,
-    role  = runCatching { UserRole.valueOf(role.uppercase()) }.getOrDefault(UserRole.STUDENT)
+    role  = UserRole.STUDENT
 )
 
 fun CalendarEventDto.toDomain(): CalendarEvent = CalendarEvent(
@@ -33,17 +33,21 @@ fun CalendarEvent.toDto(): CalendarEventDto = CalendarEventDto(
 )
 
 fun CourseDto.toDomain(): Course = Course(
-    id          = id,
-    name        = name,
-    teacher     = teacher,
-    description = description,
-    color       = color
+    id                 = id.toString(),
+    name               = name,
+    teacher            = teacher,
+    description        = description,
+    color              = color,
+    locationOrPlatform = locationOrPlatform,
+    credits            = credits
 )
 
 fun Course.toDto(): CourseDto = CourseDto(
-    id          = id,
-    name        = name,
-    teacher     = teacher,
-    description = description,
-    color       = color
+    id                 = id.toLongOrNull() ?: 0L,
+    name               = name,
+    teacher            = teacher,
+    description        = description,
+    color              = color,
+    locationOrPlatform = locationOrPlatform,
+    credits            = credits
 )

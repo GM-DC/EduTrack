@@ -3,15 +3,12 @@ package org.owlcode.edutrack.features.calendar
 import org.owlcode.edutrack.domain.model.CalendarItem
 import org.owlcode.edutrack.domain.model.EventoPersonal
 
-enum class CalendarFilter { ALL, ACADEMIC, PERSONAL }
-
 data class AgendaUiState(
     val currentYear: Int,
     val currentMonth: Int,           // 1-12
     val selectedDateStr: String,     // "YYYY-MM-DD"
     val visibleWeekStart: String,    // "YYYY-MM-DD", siempre lunes
     val viewMode: CalendarViewMode = CalendarViewMode.MONTH,
-    val activeFilter: CalendarFilter = CalendarFilter.ALL,
     val eventsByDate: Map<String, List<CalendarItem>> = emptyMap(),
     val isLoading: Boolean = false,
     val error: String? = null,

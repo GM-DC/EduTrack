@@ -22,7 +22,8 @@ import org.owlcode.edutrack.domain.model.Tarea
  */
 fun Clase.toCalendarItems(
     range: ClosedRange<LocalDate>,
-    courseColor: String? = null
+    courseColor: String? = null,
+    courseName: String? = null
 ): List<CalendarItem> {
     if (isCancelled) return emptyList()
 
@@ -32,7 +33,7 @@ fun Clase.toCalendarItems(
     // Evento único
     if (rule == null || rule.type == RecurrenceType.NONE) {
         if (seriesStart !in range) return emptyList()
-        return listOf(buildClaseItem(seriesStart, courseColor))
+        return listOf(buildClaseItem(seriesStart, courseColor, courseName))
     }
 
     val seriesEnd: LocalDate = when (rule.endType) {
@@ -55,7 +56,7 @@ fun Clase.toCalendarItems(
             var current = seriesStart
             while (current <= effectiveEnd && occurrences < maxOccurrences) {
                 if (current in range) {
-                    result.add(buildClaseItem(current, courseColor))
+                    result.add(buildClaseItem(current, courseColor, courseName))
                     occurrences++
                 }
                 current = current.plus(rule.interval, DateTimeUnit.DAY)
@@ -75,7 +76,7 @@ fun Clase.toCalendarItems(
                         val day = weekMonday.plus(dow, DateTimeUnit.DAY)
                         if (day < seriesStart || day > effectiveEnd) continue
                         if (day in range) {
-                            result.add(buildClaseItem(day, courseColor))
+                            result.add(buildClaseItem(day, courseColor, courseName))
                             occurrences++
                         }
                     }
@@ -89,7 +90,7 @@ fun Clase.toCalendarItems(
             var current = seriesStart
             while (current <= effectiveEnd && occurrences < maxOccurrences) {
                 if (current in range) {
-                    result.add(buildClaseItem(current, courseColor))
+                    result.add(buildClaseItem(current, courseColor, courseName))
                     occurrences++
                 }
                 current = current.plus(rule.interval, DateTimeUnit.MONTH)
@@ -102,7 +103,7 @@ fun Clase.toCalendarItems(
     return result
 }
 
-private fun Clase.buildClaseItem(date: LocalDate, courseColor: String?): CalendarItem =
+private fun Clase.buildClaseItem(date: LocalDate, courseColor: String?, courseName: String?): CalendarItem =
     CalendarItem(
         id          = "${id}_${date}",
         sourceId    = id,
@@ -113,7 +114,8 @@ private fun Clase.buildClaseItem(date: LocalDate, courseColor: String?): Calenda
         endTime     = endTime ?: startTime?.let { addOneHour(it) },
         isAllDay    = startTime == null,
         courseColor = courseColor,
-        courseId    = courseId
+        courseId    = courseId,
+        courseName  = courseName
     )
 
 // ── Tarea ────────────────────────────────────────────────────────────────────
@@ -122,7 +124,7 @@ private fun Clase.buildClaseItem(date: LocalDate, courseColor: String?): Calenda
  * Genera un único [CalendarItem] para una [Tarea].
  * Si no tiene hora → [CalendarItem.isAllDay] = true e [CalendarItem.isDeadline] = true.
  */
-fun Tarea.toCalendarItem(courseColor: String? = null): CalendarItem =
+fun Tarea.toCalendarItem(courseColor: String? = null, courseName: String? = null): CalendarItem =
     CalendarItem(
         id          = id,
         sourceId    = id,
@@ -135,6 +137,7 @@ fun Tarea.toCalendarItem(courseColor: String? = null): CalendarItem =
         isDeadline  = true,
         courseColor = courseColor,
         courseId    = courseId,
+        courseName  = courseName,
         status      = estado.name
     )
 
@@ -144,7 +147,7 @@ fun Tarea.toCalendarItem(courseColor: String? = null): CalendarItem =
  * Genera un único [CalendarItem] para un [Examen].
  * Si [Examen.horaFin] es null → se calcula como [Examen.horaInicio] + 1 hora.
  */
-fun Examen.toCalendarItem(courseColor: String? = null): CalendarItem {
+fun Examen.toCalendarItem(courseColor: String? = null, courseName: String? = null): CalendarItem {
     val effectiveEnd = horaFin ?: horaInicio?.let { addOneHour(it) }
     return CalendarItem(
         id          = id,
@@ -157,6 +160,7 @@ fun Examen.toCalendarItem(courseColor: String? = null): CalendarItem {
         isAllDay    = horaInicio == null,
         courseColor = courseColor,
         courseId    = courseId,
+        courseName  = courseName,
         status      = estado.name
     )
 }

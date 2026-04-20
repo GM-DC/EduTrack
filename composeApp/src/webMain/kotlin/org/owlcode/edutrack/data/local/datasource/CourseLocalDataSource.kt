@@ -12,7 +12,7 @@ class CourseLocalDataSource(private val driver: StorageDriver) {
     }
 
     suspend fun saveCourse(course: CourseDto) =
-        driver.put(STORE, course.id, Json.encodeToString(course))
+        driver.put(STORE, course.id.toString(), Json.encodeToString(course))
 
     suspend fun getCourse(id: String): CourseDto? =
         driver.get(STORE, id)?.let { Json.decodeFromString(it) }

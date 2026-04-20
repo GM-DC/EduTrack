@@ -56,11 +56,12 @@ class CalendarViewModel(
 
     fun loadEvents() {
         viewModelScope.launch {
+            println("[CalendarViewModel] Iniciando carga de eventos...")
             _state.update { it.copy(isLoading = true) }
 
-            // Mapa courseId → color hex
+            // Mapa courseId → Pair(color hex, nombre)
             val coursesMap = when (val r = courseRepository.getCourses()) {
-                is AppResult.Success -> r.data.associate { it.id to it.color }
+                is AppResult.Success -> r.data.associate { it.id to (it.color to it.name) }
                 is AppResult.Error   -> emptyMap()
             }
 
@@ -73,16 +74,25 @@ class CalendarViewModel(
 
             val items = mutableListOf<CalendarItem>()
 
+            println("[CalendarViewModel] Llamando a claseRepository.getAllClases()...")
             when (val r = claseRepository.getAllClases()) {
-                is AppResult.Success -> r.data.forEach { clase ->
-                    items.addAll(clase.toCalendarItems(range, coursesMap[clase.courseId]))
+                is AppResult.Success -> {
+                    println("[CalendarViewModel] Clases obtenidas: ${r.data.size}")
+                    r.data.forEach { clase ->
+                        println("[CalendarViewModel] Clase: $clase")
+                        val (color, name) = coursesMap[clase.courseId] ?: (null to null)
+                        items.addAll(clase.toCalendarItems(range, color, name))
+                    }
                 }
-                is AppResult.Error -> {}
+                is AppResult.Error -> {
+                    println("[CalendarViewModel] Error al obtener clases: ${r.error}")
+                }
             }
 
             when (val r = tareaRepository.getAllTareas()) {
                 is AppResult.Success -> r.data.forEach { tarea ->
-                    val item = tarea.toCalendarItem(coursesMap[tarea.courseId])
+                    val (color, name) = coursesMap[tarea.courseId] ?: (null to null)
+                    val item = tarea.toCalendarItem(color, name)
                     if (runCatching { LocalDate.parse(item.date) in range }.getOrDefault(false))
                         items.add(item)
                 }
@@ -91,7 +101,8 @@ class CalendarViewModel(
 
             when (val r = examenRepository.getAllExamenes()) {
                 is AppResult.Success -> r.data.forEach { examen ->
-                    val item = examen.toCalendarItem(coursesMap[examen.courseId])
+                    val (color, name) = coursesMap[examen.courseId] ?: (null to null)
+                    val item = examen.toCalendarItem(color, name)
                     if (runCatching { LocalDate.parse(item.date) in range }.getOrDefault(false))
                         items.add(item)
                 }
@@ -107,10 +118,9 @@ class CalendarViewModel(
                 is AppResult.Error -> {}
             }
 
-            val filtered = applyFilter(items, _state.value.activeFilter)
             _state.update {
                 it.copy(
-                    eventsByDate = filtered.groupBy { item -> item.date },
+                    eventsByDate = items.groupBy { item -> item.date },
                     isLoading    = false,
                     error        = null
                 )
@@ -118,17 +128,6 @@ class CalendarViewModel(
         }
     }
 
-    private fun applyFilter(items: List<CalendarItem>, filter: CalendarFilter): List<CalendarItem> =
-        when (filter) {
-            CalendarFilter.ALL      -> items
-            CalendarFilter.ACADEMIC -> items.filter { it.type != EventType.PERSONAL }
-            CalendarFilter.PERSONAL -> items.filter { it.type == EventType.PERSONAL }
-        }
-
-    fun setFilter(filter: CalendarFilter) {
-        _state.update { it.copy(activeFilter = filter) }
-        loadEvents()
-    }
 
     // ── Navegación de fecha/modo ───────────────────────────────────────────────
 

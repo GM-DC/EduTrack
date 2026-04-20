@@ -6,8 +6,8 @@ import org.owlcode.edutrack.domain.model.ExamStatus
 
 @Serializable
 data class ExamenDto(
-    val id: String,
-    val courseId: String,
+    val id: Long = 0L,
+    val courseId: Long,
     val titulo: String,
     val tema: String = "",
     val puntaje: Float? = null,
@@ -18,8 +18,8 @@ data class ExamenDto(
     val estado: String = ExamStatus.PENDING.name
 ) {
     fun toDomain(): Examen = Examen(
-        id         = id,
-        courseId   = courseId,
+        id         = id.toString(),
+        courseId   = courseId.toString(),
         titulo     = titulo,
         tema       = tema,
         puntaje    = puntaje,
@@ -27,13 +27,13 @@ data class ExamenDto(
         horaInicio = horaInicio,
         horaFin    = horaFin,
         duracion   = duracion,
-        estado     = ExamStatus.valueOf(estado)
+        estado     = runCatching { ExamStatus.valueOf(estado) }.getOrDefault(ExamStatus.PENDING)
     )
 }
 
 fun Examen.toDto(): ExamenDto = ExamenDto(
-    id         = id,
-    courseId   = courseId,
+    id         = id.toLongOrNull() ?: 0L,
+    courseId   = courseId.toLongOrNull() ?: 0L,
     titulo     = titulo,
     tema       = tema,
     puntaje    = puntaje,
