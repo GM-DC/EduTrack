@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import org.owlcode.edutrack.domain.model.RecurrenceEndType
 import org.owlcode.edutrack.domain.model.RecurrenceRule
 import org.owlcode.edutrack.domain.model.RecurrenceType
+import org.owlcode.edutrack.features.calendar.components.DatePickerField
 
 private val DAY_LABELS = listOf("Lu", "Ma", "Mi", "Ju", "Vi", "Sa", "Do")
 private val MONTH_SHORT = listOf("", "ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic")
@@ -101,11 +102,11 @@ fun RecurrencePickerDialog(
                         }
                     }
                     if (endType == RecurrenceEndType.UNTIL_DATE) {
-                        OutlinedTextField(
-                            value = untilDate, onValueChange = { untilDate = it },
-                            label = { Text("Hasta (YYYY-MM-DD)") },
-                            placeholder = { Text("2026-04-07") },
-                            singleLine = true, modifier = Modifier.fillMaxWidth()
+                        DatePickerField(
+                            value          = untilDate,
+                            onDateSelected = { untilDate = it },
+                            label          = "Hasta fecha",
+                            modifier       = Modifier.fillMaxWidth()
                         )
                     }
                     if (endType == RecurrenceEndType.AFTER_OCCURRENCES) {
