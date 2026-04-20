@@ -6,6 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.owlcode.edutrack.domain.model.*
+import org.owlcode.edutrack.features.calendar.components.TimePickerField
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClaseFormDialog(
@@ -95,17 +96,18 @@ fun ClaseFormDialog(
 
                 if (modalidad != ClassMode.SELF_PACED) {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedTextField(
-                            value = startTime, onValueChange = { startTime = it; timeOrderError = false },
-                            label = { Text("Hora inicio") },
-                            placeholder = { Text("08:00") },
-                            singleLine = true, modifier = Modifier.weight(1f)
+                        TimePickerField(
+                            value          = startTime,
+                            onTimeSelected = { startTime = it; timeOrderError = false },
+                            label          = "Hora inicio",
+                            modifier       = Modifier.weight(1f)
                         )
-                        OutlinedTextField(
-                            value = endTime, onValueChange = { endTime = it; timeOrderError = false },
-                            label = { Text("Hora fin") },
-                            placeholder = { Text("10:00") },
-                            isError = timeOrderError, singleLine = true, modifier = Modifier.weight(1f)
+                        TimePickerField(
+                            value          = endTime,
+                            onTimeSelected = { endTime = it; timeOrderError = false },
+                            label          = "Hora fin",
+                            isError        = timeOrderError,
+                            modifier       = Modifier.weight(1f)
                         )
                     }
                     if (timeOrderError) Text("Hora fin debe ser > hora inicio", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error)

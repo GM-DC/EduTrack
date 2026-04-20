@@ -71,22 +71,18 @@ fun EventFormDialog(
 
                 // Horas
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(
-                        value         = startTime,
-                        onValueChange = { startTime = it; timeOrderError = false },
-                        label         = { Text("Inicio (HH:mm)") },
-                        placeholder   = { Text("08:00") },
-                        singleLine    = true,
-                        modifier      = Modifier.weight(1f)
+                    TimePickerField(
+                        value          = startTime,
+                        onTimeSelected = { startTime = it; timeOrderError = false },
+                        label          = "Hora inicio",
+                        modifier       = Modifier.weight(1f)
                     )
-                    OutlinedTextField(
-                        value         = endTime,
-                        onValueChange = { endTime = it; timeOrderError = false },
-                        label         = { Text("Fin (HH:mm)") },
-                        placeholder   = { Text("10:00") },
-                        isError       = timeOrderError,
-                        singleLine    = true,
-                        modifier      = Modifier.weight(1f)
+                    TimePickerField(
+                        value          = endTime,
+                        onTimeSelected = { endTime = it; timeOrderError = false },
+                        label          = "Hora fin",
+                        isError        = timeOrderError,
+                        modifier       = Modifier.weight(1f)
                     )
                 }
                 if (timeOrderError) {

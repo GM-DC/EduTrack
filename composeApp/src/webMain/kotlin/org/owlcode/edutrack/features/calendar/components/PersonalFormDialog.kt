@@ -55,22 +55,18 @@ fun PersonalFormDialog(
                     modifier      = Modifier.fillMaxWidth()
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(
-                        value         = horaInicio,
-                        onValueChange = { horaInicio = it; horasError = false },
-                        label         = { Text("Hora inicio (HH:mm)") },
-                        placeholder   = { Text("08:00") },
-                        singleLine    = true,
-                        modifier      = Modifier.weight(1f)
+                    TimePickerField(
+                        value          = horaInicio,
+                        onTimeSelected = { horaInicio = it; horasError = false },
+                        label          = "Hora inicio",
+                        modifier       = Modifier.weight(1f)
                     )
-                    OutlinedTextField(
-                        value         = horaFin,
-                        onValueChange = { horaFin = it; horasError = false },
-                        label         = { Text("Hora fin (HH:mm)") },
-                        placeholder   = { Text("10:00") },
-                        isError       = horasError,
-                        singleLine    = true,
-                        modifier      = Modifier.weight(1f)
+                    TimePickerField(
+                        value          = horaFin,
+                        onTimeSelected = { horaFin = it; horasError = false },
+                        label          = "Hora fin",
+                        isError        = horasError,
+                        modifier       = Modifier.weight(1f)
                     )
                 }
                 if (horasError) {

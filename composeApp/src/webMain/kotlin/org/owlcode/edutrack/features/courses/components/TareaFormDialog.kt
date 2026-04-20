@@ -8,6 +8,7 @@ import androidx.compose.ui.unit.dp
 import org.owlcode.edutrack.domain.model.Tarea
 import org.owlcode.edutrack.domain.model.TaskPriority
 import org.owlcode.edutrack.domain.model.TaskStatus
+import org.owlcode.edutrack.features.calendar.components.TimePickerField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,11 +61,11 @@ fun TareaFormDialog(
                         isError = dueDateError,
                         singleLine = true, modifier = Modifier.weight(1f)
                     )
-                    OutlinedTextField(
-                        value = dueTime, onValueChange = { dueTime = it },
-                        label = { Text("Hora (HH:mm)") },
-                        placeholder = { Text("08:00") },
-                        singleLine = true, modifier = Modifier.weight(1f)
+                    TimePickerField(
+                        value          = dueTime,
+                        onTimeSelected = { dueTime = it },
+                        label          = "Hora límite",
+                        modifier       = Modifier.weight(1f)
                     )
                 }
                 if (dueDateError) Text("Fecha requerida", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error)
