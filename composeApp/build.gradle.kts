@@ -139,3 +139,6 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile>().configureEa
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon>().configureEach {
+    dependsOn("generateAppConfig")
+}
