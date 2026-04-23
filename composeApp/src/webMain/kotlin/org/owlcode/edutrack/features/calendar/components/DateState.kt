@@ -48,4 +48,3 @@ fun String.toDateState(): DateState? {
     val day   = parts[2].toIntOrNull() ?: return null
     return DateState(day = day, month = month, year = year)
 }
-

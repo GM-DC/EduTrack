@@ -44,12 +44,15 @@ fun PersonalFormDialog(
                     label         = { Text("Descripción") },
                     modifier      = Modifier.fillMaxWidth()
                 )
-                DatePickerField(
-                    value          = fecha,
-                    onDateSelected = { fecha = it; fechaError = false },
-                    label          = "Fecha *",
-                    isError        = fechaError,
-                    modifier       = Modifier.fillMaxWidth()
+                OutlinedTextField(
+                    value         = fecha,
+                    onValueChange = { fecha = it; fechaError = false },
+                    label         = { Text("Fecha (YYYY-MM-DD) *") },
+                    placeholder   = { Text("2026-04-07") },
+                    isError       = fechaError,
+                    supportingText = if (fechaError) ({ Text("Fecha inválida") }) else null,
+                    singleLine    = true,
+                    modifier      = Modifier.fillMaxWidth()
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     TimePickerField(

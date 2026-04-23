@@ -8,7 +8,6 @@ import androidx.compose.ui.unit.dp
 import org.owlcode.edutrack.domain.model.Tarea
 import org.owlcode.edutrack.domain.model.TaskPriority
 import org.owlcode.edutrack.domain.model.TaskStatus
-import org.owlcode.edutrack.features.calendar.components.DatePickerField
 import org.owlcode.edutrack.features.calendar.components.TimePickerField
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,12 +54,12 @@ fun TareaFormDialog(
                 }
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    DatePickerField(
-                        value          = dueDate,
-                        onDateSelected = { dueDate = it; dueDateError = false },
-                        label          = "Fecha límite *",
-                        isError        = dueDateError,
-                        modifier       = Modifier.weight(1f)
+                    OutlinedTextField(
+                        value = dueDate, onValueChange = { dueDate = it; dueDateError = false },
+                        label = { Text("Fecha límite (YYYY-MM-DD) *") },
+                        placeholder = { Text("2026-04-07") },
+                        isError = dueDateError,
+                        singleLine = true, modifier = Modifier.weight(1f)
                     )
                     TimePickerField(
                         value          = dueTime,

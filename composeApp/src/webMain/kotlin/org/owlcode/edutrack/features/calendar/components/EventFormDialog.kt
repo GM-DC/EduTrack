@@ -58,12 +58,15 @@ fun EventFormDialog(
                 )
 
                 // Fecha
-                DatePickerField(
-                    value          = date,
-                    onDateSelected = { date = it; dateError = false },
-                    label          = "Fecha *",
-                    isError        = dateError,
-                    modifier       = Modifier.fillMaxWidth()
+                OutlinedTextField(
+                    value         = date,
+                    onValueChange = { date = it; dateError = false },
+                    label         = { Text("Fecha (YYYY-MM-DD) *") },
+                    placeholder   = { Text("2026-04-07") },
+                    isError       = dateError,
+                    supportingText = if (dateError) ({ Text("Formato inválido") }) else null,
+                    singleLine    = true,
+                    modifier      = Modifier.fillMaxWidth()
                 )
 
                 // Horas

@@ -6,7 +6,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.owlcode.edutrack.domain.model.*
-import org.owlcode.edutrack.features.calendar.components.DatePickerField
 import org.owlcode.edutrack.features.calendar.components.TimePickerField
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,18 +79,17 @@ fun ClaseFormDialog(
                 OutlinedTextField(value = notas, onValueChange = { notas = it }, label = { Text("Notas") }, modifier = Modifier.fillMaxWidth())
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    DatePickerField(
-                        value          = startDate,
-                        onDateSelected = { startDate = it; startDateError = false; dateOrderError = false },
-                        label          = "Inicio *",
-                        isError        = startDateError || dateOrderError,
-                        modifier       = Modifier.weight(1f)
+                    OutlinedTextField(
+                        value = startDate, onValueChange = { startDate = it; startDateError = false; dateOrderError = false },
+                        label = { Text("Inicio *") },
+                        placeholder = { Text("2026-04-07") },
+                        isError = startDateError || dateOrderError, singleLine = true, modifier = Modifier.weight(1f)
                     )
-                    DatePickerField(
-                        value          = endDate,
-                        onDateSelected = { endDate = it; dateOrderError = false },
-                        label          = "Fin",
-                        modifier       = Modifier.weight(1f)
+                    OutlinedTextField(
+                        value = endDate, onValueChange = { endDate = it; dateOrderError = false },
+                        label = { Text("Fin") },
+                        placeholder = { Text("2026-04-07") },
+                        singleLine = true, modifier = Modifier.weight(1f)
                     )
                 }
                 if (dateOrderError) Text("La fecha de fin debe ser ≥ inicio", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error)

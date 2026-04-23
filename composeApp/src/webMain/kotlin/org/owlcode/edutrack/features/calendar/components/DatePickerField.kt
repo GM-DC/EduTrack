@@ -41,7 +41,7 @@ fun DatePickerField(
         label             = { Text(label) },
         placeholder       = { Text("DD / MM / YYYY") },
         isError           = isError,
-        trailingIcon      = { Text("📅") },
+        trailingIcon      = { Text("") },
         modifier          = modifier,
         interactionSource = interactionSource
     )
@@ -58,4 +58,3 @@ fun DatePickerField(
         )
     }
 }
-

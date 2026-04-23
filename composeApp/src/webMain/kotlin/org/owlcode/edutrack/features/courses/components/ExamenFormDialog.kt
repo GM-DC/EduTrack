@@ -7,7 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.owlcode.edutrack.domain.model.Examen
 import org.owlcode.edutrack.domain.model.ExamStatus
-import org.owlcode.edutrack.features.calendar.components.DatePickerField
 import org.owlcode.edutrack.features.calendar.components.TimePickerField
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,12 +41,12 @@ fun ExamenFormDialog(
                     singleLine = true, modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(value = tema, onValueChange = { tema = it }, label = { Text("Tema") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                DatePickerField(
-                    value          = fecha,
-                    onDateSelected = { fecha = it; fechaError = false },
-                    label          = "Fecha *",
-                    isError        = fechaError,
-                    modifier       = Modifier.fillMaxWidth()
+                OutlinedTextField(
+                    value = fecha, onValueChange = { fecha = it; fechaError = false },
+                    label = { Text("Fecha (YYYY-MM-DD) *") },
+                    placeholder = { Text("2026-04-07") },
+                    isError = fechaError,
+                    singleLine = true, modifier = Modifier.fillMaxWidth()
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     TimePickerField(
