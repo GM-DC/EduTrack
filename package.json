@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "start": "serve -s composeApp/build/dist/js/productionExecutable -l $PORT"
+  },
+  "dependencies": {
+    "serve": "latest"
+  },
+  "devDependencies": {}
+}
+
