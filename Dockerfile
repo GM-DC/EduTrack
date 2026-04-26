@@ -12,8 +12,19 @@ WORKDIR /app
 # Copiar todo el proyecto
 COPY . .
 
-# Build KMP web
-RUN chmod +x ./gradlew && ./gradlew :composeApp:jsBrowserProductionWebpack --no-daemon --no-configuration-cache
+# Verificar qué Node se está usando (sistema vs interno de Gradle)
+RUN node -v && which node
+
+# Build KMP web con logs detallados
+RUN chmod +x ./gradlew && ./gradlew :composeApp:jsBrowserProductionWebpack \
+    --no-daemon \
+    --no-configuration-cache \
+    --stacktrace \
+    --info
+
+# Copiar index.html al directorio de producción (necesario para que serve funcione)
+RUN cp composeApp/build/processedResources/js/main/index.html \
+       composeApp/build/kotlin-webpack/js/productionExecutable/index.html
 
 EXPOSE 8080
 
