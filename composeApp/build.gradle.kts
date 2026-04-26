@@ -6,10 +6,10 @@ val envFile = rootProject.file(".env")
 val envProps = Properties().apply {
     if (envFile.exists()) envFile.inputStream().use { load(it) }
 }
+// Prioridad: variable de entorno del sistema > .env > default
 fun env(key: String, default: String = ""): String =
-    (envProps.getProperty(key) ?: System.getenv(key) ?: default)
+    (System.getenv(key) ?: envProps.getProperty(key) ?: default)
         .trim()
-        .removePrefix("#.*".toRegex().find("")?.value ?: "")  // ignora comentarios inline
 // ─────────────────────────────────────────────────────────────────────────────
 
 plugins {
@@ -81,16 +81,25 @@ val generateAppConfig by tasks.registering {
 
     val outputDir = layout.buildDirectory.dir("generated/kotlin/commonMain/org/owlcode/edutrack/core/config")
     outputs.dir(outputDir)
+    // No usar build cache: los valores pueden venir de variables de entorno del sistema
+    outputs.cacheIf { false }
     inputs.file(envFile).optional(true)
 
-    // Capturamos los valores aquí (fase de configuración) para ser compatibles
-    // con el configuration cache de Gradle
+    // Capturamos los valores aquí (fase de configuración).
+    // Prioridad: variable de entorno del sistema (CI/Railway) > .env (local)
     val apiBaseUrl  = env("API_BASE_URL", "http://localhost:8080")
     val apiVersion  = env("API_VERSION",  "v1")
     val appEnv      = env("APP_ENV",      "development")
     val webHost     = env("WEB_HOST",     "localhost")
     val webPort     = env("WEB_PORT",     "8081").toIntOrNull() ?: 8081
     val logLevel    = env("LOG_LEVEL",    "DEBUG")
+
+    // Declaramos los valores como inputs para que el configuration cache
+    // se invalide si cambia el .env o las variables de entorno
+    inputs.property("apiBaseUrl", apiBaseUrl)
+    inputs.property("appEnv",     appEnv)
+    inputs.property("apiVersion", apiVersion)
+    inputs.property("logLevel",   logLevel)
 
     doLast {
         val dir = outputDir.get().asFile.also { it.mkdirs() }
