@@ -22,10 +22,13 @@ RUN chmod +x ./gradlew && ./gradlew :composeApp:jsBrowserProductionWebpack \
     --stacktrace \
     --info
 
-# Copiar index.html al directorio de producción (necesario para que serve funcione)
-RUN cp composeApp/build/processedResources/js/main/index.html \
-       composeApp/build/kotlin-webpack/js/productionExecutable/index.html
+# Copiar todos los recursos estáticos al directorio de producción
+RUN cp -r composeApp/build/processedResources/js/main/* \
+       composeApp/build/kotlin-webpack/js/productionExecutable/ || true
+RUN cp -r composeApp/build/processedResources/web/main/* \
+       composeApp/build/kotlin-webpack/js/productionExecutable/ || true
 
 EXPOSE 8080
 
-CMD ["sh", "-c", "serve -s composeApp/build/kotlin-webpack/js/productionExecutable -l $PORT"]
+# Listar archivos y servir (para debug si algo falta)
+CMD ["sh", "-c", "ls -la composeApp/build/kotlin-webpack/js/productionExecutable && serve -s composeApp/build/kotlin-webpack/js/productionExecutable -l $PORT"]
