@@ -1,24 +1,19 @@
-FROM node:18-alpine
+FROM eclipse-temurin:21-jdk-jammy
 
-# Instalar Java para Gradle + bash
-RUN apk add --no-cache openjdk21 bash
+# Instalar Node.js 22 y serve
+RUN apt-get update && apt-get install -y curl ca-certificates \
+    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g serve \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 # Copiar todo el proyecto
 COPY . .
 
-# 1️⃣ Primer build: deja que Kotlin descargue su Node interno (puede fallar, no importa)
-RUN chmod +x ./gradlew && ./gradlew :composeApp:jsBrowserProductionWebpack --no-daemon || true
-
-# 2️⃣ Eliminar el Node interno de Gradle para forzar uso del Node del sistema
-RUN rm -rf /root/.gradle/nodejs
-
-# 3️⃣ Build real: ahora sí usa el Node del sistema (node:18-alpine)
-RUN ./gradlew :composeApp:jsBrowserProductionWebpack --no-daemon
-
-# Instalar servidor estático
-RUN npm install -g serve
+# Build KMP web
+RUN chmod +x ./gradlew && ./gradlew :composeApp:jsBrowserProductionWebpack --no-daemon --no-configuration-cache
 
 EXPOSE 8080
 
