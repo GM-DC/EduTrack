@@ -8,12 +8,14 @@ WORKDIR /app
 # Copiar todo el proyecto
 COPY . .
 
-# Forzar uso del Node del sistema (evita que Gradle descargue el suyo)
-ENV PATH="/usr/local/bin:$PATH"
-ENV NODE_OPTIONS=--openssl-legacy-provider
+# 1️⃣ Primer build: deja que Kotlin descargue su Node interno (puede fallar, no importa)
+RUN chmod +x ./gradlew && ./gradlew :composeApp:jsBrowserProductionWebpack --no-daemon || true
 
-# Build KMP web
-RUN chmod +x ./gradlew && ./gradlew :composeApp:jsBrowserProductionWebpack --no-daemon
+# 2️⃣ Eliminar el Node interno de Gradle para forzar uso del Node del sistema
+RUN rm -rf /root/.gradle/nodejs
+
+# 3️⃣ Build real: ahora sí usa el Node del sistema (node:18-alpine)
+RUN ./gradlew :composeApp:jsBrowserProductionWebpack --no-daemon
 
 # Instalar servidor estático
 RUN npm install -g serve
