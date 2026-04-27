@@ -8,22 +8,28 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import org.owlcode.edutrack.core.config.AppConfig
 
-fun createHttpClient(): HttpClient = HttpClient {
-    // URL base tomada del .env (inyectada en tiempo de compilación)
-    defaultRequest {
-        url(AppConfig.API_BASE_URL + "/")
-    }
+fun createHttpClient(): HttpClient {
+    // ✅ Log de diagnóstico — debe mostrar la URL de Railway, nunca localhost
+    println("▶ [HttpClient] API_BASE_URL = ${AppConfig.API_BASE_URL}")
+    println("▶ [HttpClient] APP_ENV      = ${AppConfig.APP_ENV}")
 
-    install(ContentNegotiation) {
-        json(Json {
-            ignoreUnknownKeys = true
-            isLenient = true
-            coerceInputValues = true
-        })
-    }
+    return HttpClient {
+        // URL base tomada del .env (inyectada en tiempo de compilación)
+        defaultRequest {
+            url(AppConfig.API_BASE_URL + "/")
+        }
 
-    install(Logging) {
-        level = if (AppConfig.isDevelopment) LogLevel.BODY else LogLevel.INFO
+        install(ContentNegotiation) {
+            json(Json {
+                ignoreUnknownKeys = true
+                isLenient = true
+                coerceInputValues = true
+            })
+        }
+
+        install(Logging) {
+            level = if (AppConfig.isDevelopment) LogLevel.BODY else LogLevel.INFO
+        }
     }
 }
 

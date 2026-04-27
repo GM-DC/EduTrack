@@ -27,20 +27,20 @@ import org.owlcode.edutrack.domain.repository.ClaseRepository
 import org.owlcode.edutrack.domain.repository.CourseRepository
 import org.owlcode.edutrack.domain.repository.ExamenRepository
 import org.owlcode.edutrack.domain.repository.PersonalRepository
+import org.owlcode.edutrack.core.config.AppConfig
 import org.owlcode.edutrack.domain.repository.TareaRepository
-
-private const val BASE_URL = "http://localhost:8080"
 
 val dataModule = module {
     includes(coreModule)
 
     // ── API Services ──────────────────────────────────────────────────────────
-    single { AuthApiService(get(), BASE_URL) }
-    single { CourseApiService(get(), BASE_URL) }
-    single { ClaseApiService(get(), BASE_URL) }
-    single { TareaApiService(get(), BASE_URL) }
-    single { ExamenApiService(get(), BASE_URL) }
-    single { EventoPersonalApiService(get(), BASE_URL) }
+    // BASE_URL se toma de AppConfig (generado por Gradle desde .env o variable de entorno)
+    single { AuthApiService(get(), AppConfig.API_BASE_URL) }
+    single { CourseApiService(get(), AppConfig.API_BASE_URL) }
+    single { ClaseApiService(get(), AppConfig.API_BASE_URL) }
+    single { TareaApiService(get(), AppConfig.API_BASE_URL) }
+    single { ExamenApiService(get(), AppConfig.API_BASE_URL) }
+    single { EventoPersonalApiService(get(), AppConfig.API_BASE_URL) }
 
     // ── Datasources locales ────────────────────────────────────────────────────
     single { AuthLocalDataSource(get()) }

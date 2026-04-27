@@ -23,8 +23,15 @@ class AuthApiService(
     private val client: HttpClient,
     private val baseUrl: String
 ) {
+    init {
+        // ✅ Log de diagnóstico — verifica que NO sea localhost
+        println("▶ [AuthApiService] baseUrl = $baseUrl")
+    }
+
     suspend fun login(email: String, password: String): AuthData {
-        val response: ApiResponse<AuthData> = client.post("$baseUrl/api/auth/login") {
+        val url = "$baseUrl/api/auth/login"
+        println("▶ [AuthApiService] POST $url")
+        val response: ApiResponse<AuthData> = client.post(url) {
             contentType(ContentType.Application.Json)
             setBody(LoginRequest(email, password))
         }.body()
@@ -37,7 +44,9 @@ class AuthApiService(
         firstName: String,
         lastName: String
     ): AuthData {
-        val response: ApiResponse<AuthData> = client.post("$baseUrl/api/auth/register") {
+        val url = "$baseUrl/api/auth/register"
+        println("▶ [AuthApiService] POST $url")
+        val response: ApiResponse<AuthData> = client.post(url) {
             contentType(ContentType.Application.Json)
             setBody(RegisterRequest(email, password, firstName, lastName))
         }.body()
