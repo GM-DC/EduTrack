@@ -26,9 +26,23 @@ class AppViewModel(
 
     init {
         viewModelScope.launch {
-            _isAuthenticated.value = authRepository.isAuthenticated()
-            if (_isAuthenticated.value) syncManager.syncAll()
-            _isInitialized.value = true  // siempre al final, con el valor correcto ya asignado
+            val authenticated = authRepository.isAuthenticated()
+            _isAuthenticated.value = authenticated
+
+            // ⚠️ CRÍTICO: marcar como inicializado ANTES del sync.
+            // El sync es una operación de red que puede tardar o fallar;
+            // no debe bloquear el montaje de la UI.
+            _isInitialized.value = true
+
+            if (authenticated) {
+                syncManager.syncAll()
+                // Si el servidor rechazó el token (401), limpiar sesión y
+                // redirigir al login sin que el usuario tenga que limpiar caché.
+                if (syncState.value == SyncState.SessionExpired) {
+                    authRepository.logout()
+                    _isAuthenticated.value = false
+                }
+            }
         }
     }
 

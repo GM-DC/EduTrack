@@ -36,6 +36,16 @@ fun App() {
         return
     }
 
+    // Redirigir al login si la sesión expira en background (token rechazado por el servidor).
+    // Esto cubre el caso de "abrí la página después de 40 min y el token ya no es válido".
+    LaunchedEffect(isAuthenticated) {
+        if (!isAuthenticated && navController.currentDestination?.route != Route.Login.path) {
+            navController.navigate(Route.Login.path) {
+                popUpTo(0) { inclusive = true }
+            }
+        }
+    }
+
     val startDestination = if (isAuthenticated) Route.Calendar.path else Route.Login.path
 
     NavHost(navController = navController, startDestination = startDestination) {
