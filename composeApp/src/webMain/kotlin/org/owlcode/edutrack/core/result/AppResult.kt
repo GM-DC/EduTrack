@@ -23,7 +23,12 @@ inline fun <T> AppResult<T>.onError(block: (AppError) -> Unit): AppResult<T> {
 
 suspend fun <T> safeApiCall(block: suspend () -> T): AppResult<T> = try {
     AppResult.Success(block())
-} catch (e: Exception) {
+} catch (e: kotlinx.coroutines.CancellationException) {
+    // Nunca atrapar CancellationException — es cómo Kotlin cancela corrutinas
+    throw e
+} catch (e: Throwable) {
+    // Throwable (no solo Exception) para capturar también errores JS nativos
+    // como DOMException de IndexedDB, que no son instancias de kotlin.Exception
     AppResult.Error(AppError.Network(e.message ?: "Error de red desconocido"))
 }
 

@@ -7,7 +7,11 @@ import kotlin.coroutines.suspendCoroutine
 
 class IndexedDbStorageDriver(
     private val dbName: String = "edutrack_db",
-    private val storeNames: List<String> = listOf("auth", "calendar", "assignments")
+    // versión 2: añade los stores que faltaban (courses, clases, tareas, examenes, personales)
+    private val dbVersion: Int = 2,
+    private val storeNames: List<String> = listOf(
+        "auth", "courses", "clases", "tareas", "examenes", "personales", "calendar"
+    )
 ) : StorageDriver {
 
     private var database: dynamic = null
@@ -15,7 +19,7 @@ class IndexedDbStorageDriver(
     private suspend fun db(): dynamic {
         if (database != null) return database
         return suspendCoroutine { cont ->
-            val request = window.asDynamic().indexedDB.open(dbName, 1)
+            val request = window.asDynamic().indexedDB.open(dbName, dbVersion)
             request.onupgradeneeded = { event: dynamic ->
                 val db = event.target.result
                 storeNames.forEach { name ->
