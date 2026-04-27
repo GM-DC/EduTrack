@@ -10,7 +10,7 @@ import org.owlcode.edutrack.domain.repository.AuthRepository
 class MockAuthRepository : AuthRepository {
 
     private val validEmail    = "123@gmail.com"
-    private val validPassword = "123"
+    private val validPassword = "12345678"
 
     private val mockUser = User(
         id    = "mock-001",

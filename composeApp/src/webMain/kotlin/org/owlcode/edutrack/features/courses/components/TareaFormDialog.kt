@@ -8,6 +8,7 @@ import androidx.compose.ui.unit.dp
 import org.owlcode.edutrack.domain.model.Tarea
 import org.owlcode.edutrack.domain.model.TaskPriority
 import org.owlcode.edutrack.domain.model.TaskStatus
+import org.owlcode.edutrack.features.calendar.components.DatePickerField
 import org.owlcode.edutrack.features.calendar.components.TimePickerField
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,11 +25,11 @@ fun TareaFormDialog(
     var dueDate     by remember { mutableStateOf(initialTarea?.dueDate     ?: "") }
     var dueTime     by remember { mutableStateOf(initialTarea?.dueTime     ?: "") }
     var estado      by remember { mutableStateOf(initialTarea?.estado      ?: TaskStatus.PENDING) }
-    var priorExpanded by remember { mutableStateOf(false) }
+    var priorExpanded  by remember { mutableStateOf(false) }
     var estadoExpanded by remember { mutableStateOf(false) }
 
-    var tituloError   by remember { mutableStateOf(false) }
-    var dueDateError  by remember { mutableStateOf(false) }
+    var tituloError  by remember { mutableStateOf(false) }
+    var dueDateError by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -43,7 +44,6 @@ fun TareaFormDialog(
                 )
                 OutlinedTextField(value = descripcion, onValueChange = { descripcion = it }, label = { Text("Descripción") }, modifier = Modifier.fillMaxWidth())
 
-                // Prioridad
                 ExposedDropdownMenuBox(expanded = priorExpanded, onExpandedChange = { priorExpanded = it }) {
                     OutlinedTextField(value = prioridad.label(), onValueChange = {}, readOnly = true, label = { Text("Prioridad") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = priorExpanded) },
@@ -54,12 +54,12 @@ fun TareaFormDialog(
                 }
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(
-                        value = dueDate, onValueChange = { dueDate = it; dueDateError = false },
-                        label = { Text("Fecha límite (YYYY-MM-DD) *") },
-                        placeholder = { Text("2026-04-07") },
-                        isError = dueDateError,
-                        singleLine = true, modifier = Modifier.weight(1f)
+                    DatePickerField(
+                        value          = dueDate,
+                        onDateSelected = { dueDate = it; dueDateError = false },
+                        label          = "Fecha límite *",
+                        isError        = dueDateError,
+                        modifier       = Modifier.weight(1f)
                     )
                     TimePickerField(
                         value          = dueTime,
@@ -70,7 +70,6 @@ fun TareaFormDialog(
                 }
                 if (dueDateError) Text("Fecha requerida", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error)
 
-                // Estado (solo al editar)
                 if (initialTarea != null) {
                     ExposedDropdownMenuBox(expanded = estadoExpanded, onExpandedChange = { estadoExpanded = it }) {
                         OutlinedTextField(value = estado.label(), onValueChange = {}, readOnly = true, label = { Text("Estado") },
@@ -86,7 +85,7 @@ fun TareaFormDialog(
         confirmButton = {
             TextButton(onClick = {
                 tituloError  = titulo.isBlank()
-                dueDateError = dueDate.isBlank() || runCatching { kotlinx.datetime.LocalDate.parse(dueDate) }.isFailure
+                dueDateError = dueDate.isBlank()
                 if (!tituloError && !dueDateError) {
                     onSave(Tarea(
                         id          = initialTarea?.id ?: "",
@@ -107,4 +106,3 @@ fun TareaFormDialog(
 
 private fun TaskPriority.label() = when (this) { TaskPriority.LOW -> "Baja"; TaskPriority.MEDIUM -> "Media"; TaskPriority.HIGH -> "Alta" }
 private fun TaskStatus.label()   = when (this) { TaskStatus.PENDING -> "Pendiente"; TaskStatus.IN_PROGRESS -> "En progreso"; TaskStatus.SUBMITTED -> "Entregada"; TaskStatus.OVERDUE -> "Vencida" }
-

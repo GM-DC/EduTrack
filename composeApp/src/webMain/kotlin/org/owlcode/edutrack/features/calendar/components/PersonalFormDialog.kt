@@ -20,9 +20,9 @@ fun PersonalFormDialog(
     var horaInicio  by remember { mutableStateOf(initialEvento?.horaInicio  ?: "") }
     var horaFin     by remember { mutableStateOf(initialEvento?.horaFin     ?: "") }
 
-    var tituloError    by remember { mutableStateOf(false) }
-    var fechaError     by remember { mutableStateOf(false) }
-    var horasError     by remember { mutableStateOf(false) }
+    var tituloError by remember { mutableStateOf(false) }
+    var fechaError  by remember { mutableStateOf(false) }
+    var horasError  by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -44,16 +44,15 @@ fun PersonalFormDialog(
                     label         = { Text("Descripción") },
                     modifier      = Modifier.fillMaxWidth()
                 )
-                OutlinedTextField(
-                    value         = fecha,
-                    onValueChange = { fecha = it; fechaError = false },
-                    label         = { Text("Fecha (YYYY-MM-DD) *") },
-                    placeholder   = { Text("2026-04-07") },
-                    isError       = fechaError,
-                    supportingText = if (fechaError) ({ Text("Fecha inválida") }) else null,
-                    singleLine    = true,
-                    modifier      = Modifier.fillMaxWidth()
+                DatePickerField(
+                    value          = fecha,
+                    onDateSelected = { fecha = it; fechaError = false },
+                    label          = "Fecha *",
+                    isError        = fechaError,
+                    modifier       = Modifier.fillMaxWidth()
                 )
+                if (fechaError) Text("La fecha es requerida", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error)
+
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     TimePickerField(
                         value          = horaInicio,
@@ -79,7 +78,7 @@ fun PersonalFormDialog(
         confirmButton = {
             TextButton(onClick = {
                 tituloError = titulo.isBlank()
-                fechaError  = runCatching { kotlinx.datetime.LocalDate.parse(fecha) }.isFailure
+                fechaError  = fecha.isBlank()
                 horasError  = horaInicio.isNotBlank() && horaFin.isNotBlank() && horaFin <= horaInicio
                 if (!tituloError && !fechaError && !horasError) {
                     onSave(EventoPersonal(
@@ -96,4 +95,3 @@ fun PersonalFormDialog(
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } }
     )
 }
-

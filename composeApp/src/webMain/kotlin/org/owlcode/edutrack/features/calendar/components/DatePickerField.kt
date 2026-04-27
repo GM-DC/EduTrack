@@ -41,15 +41,14 @@ fun DatePickerField(
         label             = { Text(label) },
         placeholder       = { Text("DD / MM / YYYY") },
         isError           = isError,
-        trailingIcon      = { Text("") },
+        trailingIcon      = { Text("📅") },
         modifier          = modifier,
         interactionSource = interactionSource
     )
 
     if (showDialog) {
-        val initial = value.toDateState() ?: DateState()
         DatePickerDialog(
-            initial   = initial,
+            initial   = value.toDateState(),   // null → abre en hoy
             onDismiss = { showDialog = false },
             onConfirm = { state ->
                 showDialog = false

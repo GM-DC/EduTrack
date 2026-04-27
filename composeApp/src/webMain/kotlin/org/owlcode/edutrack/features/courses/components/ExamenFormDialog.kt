@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.owlcode.edutrack.domain.model.Examen
 import org.owlcode.edutrack.domain.model.ExamStatus
+import org.owlcode.edutrack.features.calendar.components.DatePickerField
 import org.owlcode.edutrack.features.calendar.components.TimePickerField
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,13 +42,16 @@ fun ExamenFormDialog(
                     singleLine = true, modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(value = tema, onValueChange = { tema = it }, label = { Text("Tema") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(
-                    value = fecha, onValueChange = { fecha = it; fechaError = false },
-                    label = { Text("Fecha (YYYY-MM-DD) *") },
-                    placeholder = { Text("2026-04-07") },
-                    isError = fechaError,
-                    singleLine = true, modifier = Modifier.fillMaxWidth()
+
+                DatePickerField(
+                    value          = fecha,
+                    onDateSelected = { fecha = it; fechaError = false },
+                    label          = "Fecha *",
+                    isError        = fechaError,
+                    modifier       = Modifier.fillMaxWidth()
                 )
+                if (fechaError) Text("La fecha es requerida", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error)
+
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     TimePickerField(
                         value          = horaInicio,
@@ -65,7 +69,6 @@ fun ExamenFormDialog(
                 }
                 if (horasError) Text("Hora fin debe ser > hora inicio", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error)
 
-                // Estado (solo al editar)
                 if (initialExamen != null) {
                     ExposedDropdownMenuBox(expanded = estadoExpanded, onExpandedChange = { estadoExpanded = it }) {
                         OutlinedTextField(value = estado.label(), onValueChange = {}, readOnly = true, label = { Text("Estado") },
@@ -81,7 +84,7 @@ fun ExamenFormDialog(
         confirmButton = {
             TextButton(onClick = {
                 tituloError = titulo.isBlank()
-                fechaError  = fecha.isBlank() || runCatching { kotlinx.datetime.LocalDate.parse(fecha) }.isFailure
+                fechaError  = fecha.isBlank()
                 horasError  = horaInicio.isNotBlank() && horaFin.isNotBlank() && horaFin <= horaInicio
                 if (!tituloError && !fechaError && !horasError) {
                     onSave(Examen(
@@ -107,4 +110,3 @@ private fun ExamStatus.label() = when (this) {
     ExamStatus.RESCHEDULED  -> "Reprogramado"
     ExamStatus.CANCELLED    -> "Cancelado"
 }
-

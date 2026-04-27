@@ -140,6 +140,9 @@ val generateAppConfig by tasks.registering {
                 /** Indica si la app corre en modo desarrollo */
                 val isDevelopment: Boolean get() = APP_ENV == "development"
 
+                /** True cuando la API apunta a localhost → usa datos mockeados en lugar de llamadas HTTP */
+                val useMockData: Boolean get() = API_BASE_URL.contains("localhost")
+
                 /** URL completa del endpoint base de la API */
                 val apiBaseEndpoint: String get() = "${'$'}API_BASE_URL/api"
 
