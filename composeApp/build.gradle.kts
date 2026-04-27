@@ -20,6 +20,11 @@ plugins {
 }
 
 kotlin {
+    // Habilita expect/actual para clases/objetos (actualmente en Beta en KMP)
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
     js {
         browser()
         binaries.executable()
@@ -92,14 +97,18 @@ val generateAppConfig by tasks.registering {
     val appEnv      = env("APP_ENV",      "development")
     val webHost     = env("WEB_HOST",     "localhost")
     val webPort     = env("WEB_PORT",     "8081").toIntOrNull() ?: 8081
-    val logLevel    = env("LOG_LEVEL",    "DEBUG")
+    val logLevel      = env("LOG_LEVEL",    "DEBUG")
+    // Versión única por build (epoch seconds). Cambia en cada deploy.
+    // En Railway siempre es fresco gracias a --no-configuration-cache.
+    val buildVersion  = (System.currentTimeMillis() / 1000).toString()
 
     // Declaramos los valores como inputs para que el configuration cache
     // se invalide si cambia el .env o las variables de entorno
-    inputs.property("apiBaseUrl", apiBaseUrl)
-    inputs.property("appEnv",     appEnv)
-    inputs.property("apiVersion", apiVersion)
-    inputs.property("logLevel",   logLevel)
+    inputs.property("apiBaseUrl",   apiBaseUrl)
+    inputs.property("appEnv",       appEnv)
+    inputs.property("apiVersion",   apiVersion)
+    inputs.property("logLevel",     logLevel)
+    inputs.property("buildVersion", buildVersion)
 
     doLast {
         val dir = outputDir.get().asFile.also { it.mkdirs() }
@@ -133,6 +142,9 @@ val generateAppConfig by tasks.registering {
 
                 /** URL completa del endpoint base de la API */
                 val apiBaseEndpoint: String get() = "${'$'}API_BASE_URL/api"
+
+                /** Versión única de compilación (epoch seconds). Usada para invalidar caché. */
+                const val BUILD_VERSION: String = "$buildVersion"
             }
             """.trimIndent()
         )
